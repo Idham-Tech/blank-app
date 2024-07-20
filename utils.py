@@ -213,7 +213,8 @@ def model_xgboost():
         X_post_shift, y_post_shift, test_size=0.2, random_state=42)
 
     # Training the XGBoost model on pre-shift data
-    model_pre_shift = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=500, learning_rate=0.01, max_depth=3, alpha=0.1, lambda_=0.1)
+    model_pre_shift = xgb.Booster()
+    model_pre_shift.load_model('./model_pre_shift.json')
     model_pre_shift.fit(X_train_pre_shift, y_train_pre_shift, eval_set=[(X_train_pre_shift, y_train_pre_shift), (X_val_pre_shift, y_val_pre_shift)], verbose=True)
   
     # Making predictions on pre-shift train data
@@ -221,7 +222,8 @@ def model_xgboost():
     y_train_pred_pre_shift_full = scaler.inverse_transform(y_train_pred_pre_shift_full.reshape(-1, 1))
       
     # Training the XGBoost model on post-shift data with evaluation set
-    model_post_shift = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=500, learning_rate=0.01, max_depth=3, alpha=0.1, lambda_=0.1)
+    model_post_shift = xgb.Booster()
+    model_post_shift.load_model('./model_post_shift.json')
     model_post_shift.fit(X_train_post_shift, y_train_post_shift, eval_set=[(X_train_post_shift, y_train_post_shift), (X_val_post_shift, y_val_post_shift)], verbose=True)
 
     # Making predictions on post-shift test data
@@ -253,18 +255,18 @@ def model_hybrid(model):
     data_scaled = scaler.fit_transform(data)
 
     # Preparing the data for GRU model
-    def create_dataset(dataset, look_back=12):
+    def create_dataset(dataset, seq_length=12):
         X, Y = [], []
-        for i in range(len(dataset) - look_back):
-            a = dataset[i:(i + look_back), 0]
+        for i in range(len(dataset) - seq_length):
+            a = dataset[i:(i + seq_length), 0]
             X.append(a)
-            Y.append(dataset[i + look_back, 0])
+            Y.append(dataset[i + seq_length, 0])
         return np.array(X), np.array(Y)
 
-    look_back = 12
+    seq_length = 12
 
     # Creating GRU datasets
-    X_gru, y_gru = create_dataset(data_scaled, look_back)
+    X_gru, y_gru = create_dataset(data_scaled, seq_length)
     X_gru = np.reshape(X_gru, (X_gru.shape[0], X_gru.shape[1], 1))
 
     # Splitting the data into training and testing sets for GRU
@@ -305,14 +307,16 @@ def model_hybrid(model):
         X_post_shift, y_post_shift, test_size=0.2, random_state=42)
 
     # Training the XGBoost model on pre-shift data
-    model_pre_shift = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=500, learning_rate=0.01, max_depth=3, alpha=0.1, lambda_=0.1)
+    model_pre_shift = xgb.Booster()
+    model_pre_shift.load_model('./model_pre_shift.json')
     model_pre_shift.fit(X_pre_shift, y_pre_shift, verbose=True)
 
     # Making predictions on post-shift test data
     y_train_pred_pre_shift = model_pre_shift.predict(X_pre_shift)
     
     # Training the XGBoost model on post-shift data with evaluation set
-    model_post_shift = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=500, learning_rate=0.01, max_depth=3, alpha=0.1, lambda_=0.1)
+    model_post_shift = xgb.Booster()
+    model_post_shift.load_model('./model_post_shift.json')
     model_post_shift.fit(X_train_post_shift, y_train_post_shift, eval_set=[(X_train_post_shift, y_train_post_shift), (X_val_post_shift, y_val_post_shift)], verbose=True)
 
     # Making predictions on post-shift test data
