@@ -166,7 +166,7 @@ def gru_models(model):
 
     return df_train, df_test, y_test_inv, test_predictions, normalizedData, seq_length, scaler
 
-def model_xgboost():
+def model_xgboost(model_pre_shift,model_post_shift):
     # Load the dataset
     file_path = './Keseluruhan (Coba-coba) NonMigas.csv'
     data = pd.read_csv(file_path)
@@ -213,8 +213,7 @@ def model_xgboost():
         X_post_shift, y_post_shift, test_size=0.2, random_state=42)
 
     # Training the XGBoost model on pre-shift data
-    model_pre_shift = XGBRegressor()
-    model_pre_shift.load_model('./model_pre_shift.json')
+
     model_pre_shift.fit(X_train_pre_shift, y_train_pre_shift, eval_set=[(X_train_pre_shift, y_train_pre_shift), (X_val_pre_shift, y_val_pre_shift)], verbose=True)
   
     # Making predictions on pre-shift train data
@@ -222,8 +221,7 @@ def model_xgboost():
     y_train_pred_pre_shift_full = scaler.inverse_transform(y_train_pred_pre_shift_full.reshape(-1, 1))
       
     # Training the XGBoost model on post-shift data with evaluation set
-    model_post_shift = XGBRegressor()
-    model_post_shift.load_model('./model_post_shift.json')
+
     model_post_shift.fit(X_train_post_shift, y_train_post_shift, eval_set=[(X_train_post_shift, y_train_post_shift), (X_val_post_shift, y_val_post_shift)], verbose=True)
 
     # Making predictions on post-shift test data
@@ -239,7 +237,7 @@ def model_xgboost():
 
     return data, model_post_shift, post_shift_data, y_post_shift, y_pred_post_shift, pre_shift_data, y_pre_shift, y_train_pred_pre_shift_full, scaler
 
-def model_hybrid(model):
+def model_hybrid(model,model_pre_shift,model_post_shift):
     # Load the dataset
     file_path = './Keseluruhan (Coba-coba) NonMigas.csv'
     data = pd.read_csv(file_path)
@@ -307,16 +305,12 @@ def model_hybrid(model):
         X_post_shift, y_post_shift, test_size=0.2, random_state=42)
 
     # Training the XGBoost model on pre-shift data
-    model_pre_shift = XGBRegressor()
-    model_pre_shift.load_model('./model_pre_shift.json')
     model_pre_shift.fit(X_pre_shift, y_pre_shift, verbose=True)
 
     # Making predictions on post-shift test data
     y_train_pred_pre_shift = model_pre_shift.predict(X_pre_shift)
     
     # Training the XGBoost model on post-shift data with evaluation set
-    model_post_shift = XGBRegressor()
-    model_post_shift.load_model('./model_post_shift.json')
     model_post_shift.fit(X_train_post_shift, y_train_post_shift, eval_set=[(X_train_post_shift, y_train_post_shift), (X_val_post_shift, y_val_post_shift)], verbose=True)
 
     # Making predictions on post-shift test data
@@ -373,7 +367,7 @@ def write_forecast():
 def proccess(option):
     # load model
     if option == 'GRU':
-        model = tf.keras.models.load_model('modelgru.h5')
+        model = tf.keras.models.load_model('./modelgru.h5')
         df_train, df_test, y_test_inv, test_predictions, normalizedData, seq_length, scaler= gru_models(model)
             
         visual_actpred_data()
@@ -388,8 +382,12 @@ def proccess(option):
         #forcasting
         forcast_gru(model, normalizedData, seq_length, scaler)
 
-    elif option == 'XGBoost': 
-        data, model_post_shift, post_shift_data, y_post_shift, y_pred_post_shift, pre_shift_data, y_pre_shift, y_train_pred_pre_shift_full, scaler = model_xgboost()
+    elif option == 'XGBoost':
+        model_pre_shift = xgb.XGBRegressor()
+        model_pre_shift.load_model('./model_pre_shift.json')
+        model_post_shift = xgb.XGBRegressor()
+        model_post_shift.load_model('./model_post_shift.json')
+        data, model_post_shift, post_shift_data, y_post_shift, y_pred_post_shift, pre_shift_data, y_pre_shift, y_train_pred_pre_shift_full, scaler = model_xgboost(model_pre_shift,model_post_shift)
         
         visual_actpred_data()
         plot_train_xgboost(pre_shift_data, y_pre_shift, y_train_pred_pre_shift_full)
@@ -404,9 +402,13 @@ def proccess(option):
 
     else:
         model = tf.keras.models.load_model('modelgru.h5')
+        model_pre_shift = xgb.XGBRegressor()
+        model_pre_shift.load_model('./model_pre_shift.json')
+        model_post_shift = xgb.XGBRegressor()
+        model_post_shift.load_model('./model_post_shift.json')
         df_train, df_test, y_test_inv, test_predictions, normalizedData, seq_length, scaler= gru_models(model)
-        data, model_post_shift, post_shift_data, y_post_shift, y_pred_post_shift, pre_shift_data, y_pre_shift, y_train_pred_pre_shift_full, scaler = model_xgboost()
-        data2, y_test_actual, final_preds, meta_learner, stacked_test = model_hybrid(model)
+        data, model_post_shift, post_shift_data, y_post_shift, y_pred_post_shift, pre_shift_data, y_pre_shift, y_train_pred_pre_shift_full, scaler = model_xgboost(model_pre_shift,model_post_shift)
+        data2, y_test_actual, final_preds, meta_learner, stacked_test = model_hybrid(model,model_pre_shift,model_post_shift)
 
         visual_actpred_data()
         st.write('GRU')
