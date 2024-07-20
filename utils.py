@@ -107,7 +107,7 @@ def evaluation(y_test_inv, test_predictions):
 
 def gru_models(model):
     # Preprocess the data
-    dataset = pd.read_csv('/workspaces/blank-app/Keseluruhan (Coba-coba) NonMigas.csv')
+    dataset = pd.read_csv('./Keseluruhan (Coba-coba) NonMigas.csv')
     dataset['date'] = pd.to_datetime(dataset['date'], format='%Y %B')
     dataset = dataset.sort_values('date')
     scaler = MinMaxScaler()
@@ -168,7 +168,7 @@ def gru_models(model):
 
 def model_xgboost():
     # Load the dataset
-    file_path = '/workspaces/blank-app/Keseluruhan (Coba-coba) NonMigas.csv'
+    file_path = './Keseluruhan (Coba-coba) NonMigas.csv'
     data = pd.read_csv(file_path)
 
     # Convert the date column to datetime format
@@ -239,7 +239,7 @@ def model_xgboost():
 
 def model_hybrid(model):
     # Load the dataset
-    file_path = '/workspaces/blank-app/Keseluruhan (Coba-coba) NonMigas.csv'
+    file_path = './Keseluruhan (Coba-coba) NonMigas.csv'
     data = pd.read_csv(file_path)
 
     # Convert the date column to datetime format

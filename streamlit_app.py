@@ -15,7 +15,7 @@ def load_csv(path: str):
     data = data.sort_values('date')
     return data
 
-df = load_csv('/workspaces/blank-app/Keseluruhan (Coba-coba) NonMigas.csv')
+data = load_csv('./Keseluruhan (Coba-coba) NonMigas.csv')
 # st.write(df)
 
 # sidebar #
@@ -23,15 +23,11 @@ st.sidebar.write('Data as on [Badan Pusat Statistik](https://www.bps.go.id/id) e
 option = st.sidebar.selectbox('What would you like to predicted?',('GRU', 'XGBoost', 'GRU-XGBoost'), key = 'tick')
 st.sidebar.write('You selected:', st.session_state.tick)
 predict = st.sidebar.button('Predict')
-st.sidebar.info('''This Project is used for only learning and development process. I don't encourage anyone 
-to invest in stock based on any data represented here.😊👩🏻‍🎓👩🏻‍💻''')
+st.sidebar.info('''This Project is used for only learning and development process.😊👩🏻‍🎓👩🏻‍💻''')
 
 try:
     if predict:
             if option == 'GRU':    
-                # get data
-                data = load_csv('/workspaces/blank-app/Keseluruhan (Coba-coba) NonMigas.csv')
-
                 # show data
                 data_act()
                 st.write(data)
@@ -44,8 +40,6 @@ try:
                 proccess(option)
 
             elif option == 'XGBoost':
-                # get data
-                data = load_csv('/workspaces/blank-app/Keseluruhan (Coba-coba) NonMigas.csv')
 
                 # show data
                 data_act()
@@ -59,8 +53,6 @@ try:
                 proccess(option)
 
             else:
-                # get data
-                data = load_csv('/workspaces/blank-app/Keseluruhan (Coba-coba) NonMigas.csv')
 
                 # show data
                 data_act()
