@@ -1,1 +1,9 @@
+numpy
+pandas
+matplotlib
+tensorflow==2.15.0
+keras
+xgboost==2.0.3
+scikit-learn
+plotly
 streamlit
