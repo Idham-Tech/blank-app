@@ -213,7 +213,7 @@ def model_xgboost():
         X_post_shift, y_post_shift, test_size=0.2, random_state=42)
 
     # Training the XGBoost model on pre-shift data
-    model_pre_shift = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=1000, learning_rate=0.01, max_depth=3, alpha=0.3, lambda_=0.3)
+    model_pre_shift = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=500, learning_rate=0.01, max_depth=3, alpha=0.1, lambda_=0.1)
     model_pre_shift.fit(X_train_pre_shift, y_train_pre_shift, eval_set=[(X_train_pre_shift, y_train_pre_shift), (X_val_pre_shift, y_val_pre_shift)], verbose=True)
   
     # Making predictions on pre-shift train data
@@ -221,7 +221,7 @@ def model_xgboost():
     y_train_pred_pre_shift_full = scaler.inverse_transform(y_train_pred_pre_shift_full.reshape(-1, 1))
       
     # Training the XGBoost model on post-shift data with evaluation set
-    model_post_shift = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=1000, learning_rate=0.01, max_depth=3, alpha=0.3, lambda_=0.3)
+    model_post_shift = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=500, learning_rate=0.01, max_depth=3, alpha=0.1, lambda_=0.1)
     model_post_shift.fit(X_train_post_shift, y_train_post_shift, eval_set=[(X_train_post_shift, y_train_post_shift), (X_val_post_shift, y_val_post_shift)], verbose=True)
 
     # Making predictions on post-shift test data
@@ -305,14 +305,14 @@ def model_hybrid(model):
         X_post_shift, y_post_shift, test_size=0.2, random_state=42)
 
     # Training the XGBoost model on pre-shift data
-    model_pre_shift = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=1000, learning_rate=0.01, max_depth=3, alpha=0.3, lambda_=0.3)
+    model_pre_shift = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=500, learning_rate=0.01, max_depth=3, alpha=0.1, lambda_=0.1)
     model_pre_shift.fit(X_pre_shift, y_pre_shift, verbose=True)
 
     # Making predictions on post-shift test data
     y_train_pred_pre_shift = model_pre_shift.predict(X_pre_shift)
     
     # Training the XGBoost model on post-shift data with evaluation set
-    model_post_shift = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=1000, learning_rate=0.01, max_depth=3, alpha=0.3, lambda_=0.3)
+    model_post_shift = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=500, learning_rate=0.01, max_depth=3, alpha=0.1, lambda_=0.1)
     model_post_shift.fit(X_train_post_shift, y_train_post_shift, eval_set=[(X_train_post_shift, y_train_post_shift), (X_val_post_shift, y_val_post_shift)], verbose=True)
 
     # Making predictions on post-shift test data
