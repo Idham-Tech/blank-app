@@ -405,16 +405,14 @@ def proccess(option):
         data2, y_test_actual, final_preds, meta_learner, stacked_test = model_hybrid(model)
 
         visual_actpred_data()
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.write('GRU')
-            plot_predict_gru(df_test['Date'], df_test['Actual'], df_test['Predicted'])
-        with col2:
-            st.write('XGBoost')
-            plot_predict_xgboost(post_shift_data, y_post_shift, y_pred_post_shift)
-        with col3:
-            st.write('GRU-XGBoost')
-            plot_predict_hybrid(data2, y_test_actual, final_preds)
+        st.write('GRU')
+        plot_predict_gru(df_test['Date'], df_test['Actual'], df_test['Predicted'])
+        
+        st.write('XGBoost')
+        plot_predict_xgboost(post_shift_data, y_post_shift, y_pred_post_shift)
+        
+        st.write('GRU-XGBoost')
+        plot_predict_hybrid(data2, y_test_actual, final_preds)
 
         #evaluation
         write_evaluation()
